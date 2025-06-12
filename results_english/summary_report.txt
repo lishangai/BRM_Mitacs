@@ -1,0 +1,31 @@
+Missing Data (Zero Values) Statistics Report
+============================================================
+
+Basic Data Information:
+----------------------------------------
+  Total Rows: 20531
+  Total Columns: 307
+  Total Elements: 6303017
+  Total Zero Values: 818123
+  Overall Zero Proportion: 0.1298
+
+Row Zero Proportion Statistics:
+----------------------------------------
+  Minimum: 0.0000
+  Maximum: 1.0000
+  Mean: 0.1298
+  Median: 0.0000
+  Standard Deviation: 0.2837
+  Completely Zero Rows: 343
+  Completely Non-zero Rows: 13898
+
+Column Zero Proportion Statistics:
+----------------------------------------
+  Minimum: 0.0869
+  Maximum: 0.1717
+  Mean: 0.1298
+  Median: 0.1287
+  Standard Deviation: 0.0149
+  Completely Zero Columns: 0
+  Completely Non-zero Columns: 0
+

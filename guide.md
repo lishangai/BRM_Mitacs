@@ -1,6 +1,7 @@
 如果您的数据仅限于 illuminahiseq_rnaseqv2-RSEM_genes_normalized（已标准化的RSEM表达矩阵），以下是 严格基于现有数据 可完成的完整分析步骤（Python实现）：
 
-一、数据预处理
+## 一、数据预处理
+
 加载与基础清洗
 
 import pandas as pd
@@ -26,7 +27,8 @@ brm_expr = np.log2(expr.loc["SMARCA2"] + 1)
 brm_median = np.median(brm_expr)
 groups = np.where(brm_expr > brm_median, "High", "Low")
 
-二、差异表达分析（非参数方法）
+## 二、差异表达分析（非参数方法）
+
 差异基因筛选
 
 from scipy.stats import mannwhitneyu
@@ -64,7 +66,8 @@ sns.clustermap(np.log2(expr.loc[top_genes] + 1),
                col_colors=pd.Series(groups, index=expr.columns).map({"High": "red", "Low": "blue"}),
                figsize=(12,8))
 
-三、通路分析（仅需基因列表）
+## 三、通路分析（仅需基因列表）
+
 GSEA富集
 
 import gseapy
@@ -140,7 +143,7 @@ nx.draw(G, with_labels=True, node_size=50,
      stromal_genes = ["COL1A1", "COL3A1", "FN1"]
      expr["immune_score"] = expr.loc[immune_genes].mean()
      expr["stromal_score"] = expr.loc[stromal_genes].mean()
-     
+
 
 六、输出结果清单
 分析类型       可交付结果 文件格式

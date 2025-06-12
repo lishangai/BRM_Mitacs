@@ -76,7 +76,7 @@ This study presents a comprehensive RNA-seq transcriptome analysis of the BRM ge
 - **Data Type**: TCGA RNA-seq RSEM normalized data
 - **Gene Identifier Format**: Gene Symbol|Entrez Gene ID
 - **Sample Size**: 307 samples (after quality control)
-- **Gene Count**: 18,551 genes (after filtering)
+- **Gene Count**: 18,570 genes (after filtering)
 
 ---
 
@@ -202,19 +202,20 @@ Remove genes with extremely low expression in most samples to improve statistica
 #### Filtering Criteria
 ```python
 # Keep genes expressed >1 in ≥10% of samples
-expr_filtered = expr[(expr > 1).sum(axis=1) >= 0.1 * expr.shape[1]]
+min_samples = int(0.1 * expr.shape[1])  # Convert to integer first
+expr_filtered = expr[(expr > 1).sum(axis=1) >= min_samples]
 ```
 
 #### Filter Parameters
 - **Expression Threshold**: >1 (RSEM normalized value)
-- **Sample Proportion**: ≥10% samples (≥31 samples)
+- **Sample Proportion**: ≥10% samples (≥30 samples)
 - **Biological Rationale**: Exclude noise genes, retain biologically relevant genes
 
 #### Before-After Comparison
 | Metric | Before Filter | After Filter | Change | Percentage |
 |--------|---------------|--------------|--------|------------|
-| **Total Genes** | 20,532 | 18,551 | -1,981 | -9.6% |
-| **Retained Genes** | - | 18,551 | - | 90.4% |
+| **Total Genes** | 20,532 | 18,570 | -1,962 | -9.6% |
+| **Retained Genes** | - | 18,570 | - | 90.4% |
 | **Sample Count** | 307 | 307 | 0 | 100% |
 | **Data Quality** | Mixed | High Quality | Improved | - |
 
@@ -238,7 +239,7 @@ Create reasonable high and low expression groups based on BRM gene expression.
 # log2 transformation and median calculation
 brm_expr = np.log2(expr.loc[brm_gene] + 1)
 brm_median = np.median(brm_expr)
-groups = np.where(brm_expr > brm_median, "High", "Low")
+groups = np.where(brm_expr >= brm_median, "High", "Low")
 ```
 
 #### Grouping Results Comparison
@@ -373,7 +374,7 @@ p_threshold = 0.05  # p-value threshold
 
 ### Data Quality Overview
 - **Original Gene Count**: 20,532
-- **Filtered Gene Count**: 18,551 (removed 1,981 low-quality genes)
+- **Filtered Gene Count**: 18,570 (removed 1,962 low-quality genes)
 - **Total Sample Count**: 307
 - **Data Completeness**: 100% (no missing values)
 
@@ -386,9 +387,9 @@ p_threshold = 0.05  # p-value threshold
 ### Differential Expression Analysis Results
 
 #### Overall Statistics
-- **Total Significant DEGs**: 6,002 genes
-- **Upregulated Genes**: 3,192 (53.2%)
-- **Downregulated Genes**: 2,810 (46.8%)
+- **Total Significant DEGs**: 6,123 genes
+- **Upregulated Genes**: 3,236 (52.8%)
+- **Downregulated Genes**: 2,887 (47.2%)
 - **BRM Gene Itself**: Significantly upregulated (Log2FC = 1.56, p < 0.001)
 
 #### Top Significantly Upregulated Genes
@@ -461,37 +462,39 @@ p_threshold = 0.05  # p-value threshold
 
 ### Figure 1: BRM Gene Expression Distribution
 
-![SMARCA2 Expression Distribution](fig/smarca2_expression_distribution.png)
+![SMARCA2 Expression Distribution](../fig/smarca2_expression_distribution.png)
 
 **Figure 1**: Distribution of SMARCA2 (BRM) gene expression levels across all samples. The left panel shows boxplots comparing high and low expression groups, while the right panel displays the overall expression distribution histogram with median marked in red. The data shows good variability and clear separation between high and low expression groups.
 
 ### Figure 2: Volcano Plot - Differential Expression Analysis
 
-![Volcano Plot](fig/volcano_plot.png)
+![Volcano Plot](../fig/volcano_plot.png)
 
 **Figure 2**: Volcano plot showing differential expression results between BRM high and low expression groups. Red points represent significantly upregulated genes (3,192 genes), blue points represent significantly downregulated genes (2,810 genes), and gray points are non-significant genes. The plot demonstrates a large number of genes are significantly affected by BRM expression levels.
 
 ### Figure 3: Top Differential Genes Barplot
 
-![Top Genes Barplot](fig/top_genes_barplot.png)
+![Top Genes Barplot](../fig/top_genes_barplot.png)
 
 **Figure 3**: Bar chart displaying the top 20 most significantly differentially expressed genes ranked by absolute log2 fold change. The chart clearly shows the magnitude and direction of expression changes, with genes like C10orf81, GPR12, and HP showing the strongest upregulation, while SLC6A10P, GAGE12D, and MAGEA4 show the strongest downregulation.
 
 ### Figure 4: Differential Expression Heatmap
 
-![DEG Heatmap](fig/deg_heatmap.png)
+![DEG Heatmap](../fig/deg_heatmap.png)
 
 **Figure 4**: Heatmap visualization of the top 50 most significantly differentially expressed genes across all samples. Samples are grouped by BRM expression levels (high vs low), and genes are clustered by expression patterns. The heatmap reveals distinct expression signatures associated with BRM high and low expression groups.
 
 ### Figure 5: Correlation Analysis Results
 
-![Correlation Analysis](fig/correlation_analysis.png)
+![Correlation Analysis](../fig/correlation_analysis.png)
 
 **Figure 5**: Correlation analysis visualization showing the relationship between BRM expression and other genes. The plot displays correlation coefficients for genes significantly correlated with BRM expression, highlighting both positive correlations (SWI/SNF complex components) and negative correlations (cancer-testis antigens).
 
+![correlation_heatmap](F:\githubclone\BRM_Mitacs\figures\correlation_heatmap.png)
+
 ### Figure 6: Summary Statistics
 
-![Summary Statistics](fig/summary_statistics.png)
+![Summary Statistics](../fig/summary_statistics.png)
 
 **Figure 6**: Comprehensive summary statistics of the analysis results. This multi-panel figure provides an overview of: (A) Total number of significant differential genes, (B) Distribution of correlation coefficients, (C) Functional category enrichment, and (D) Statistical significance distributions.
 
@@ -503,7 +506,7 @@ p_threshold = 0.05  # p-value threshold
 - **Good Dynamic Range**: Expression values span approximately 5.6 log2 units
 
 #### Differential Expression Patterns
-- **Substantial Gene Regulation**: Over 32% of genes (6,002/18,551) show significant differential expression
+- **Substantial Gene Regulation**: Over 33% of genes (6,123/18,570) show significant differential expression
 - **Balanced Up/Down Regulation**: Roughly equal numbers of up and downregulated genes
 - **Strong Effect Sizes**: Many genes show fold changes >2 (log2FC >1)
 

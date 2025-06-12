@@ -115,7 +115,9 @@ def load_and_preprocess_data(filepath):
     # 过滤低表达基因 (保留在≥10%样本中表达>1的基因)
     print("过滤低表达基因...")
     before_filter = expr.shape[0]
-    expr_filtered = expr[(expr > 1).sum(axis=1) >= 0.1 * expr.shape[1]]
+    min_samples = int(0.1 * expr.shape[1])  # 与notebook保持一致：先转换为整数
+    print(f"要求至少在 {min_samples} 个样本中表达 > 1")
+    expr_filtered = expr[(expr > 1).sum(axis=1) >= min_samples]
     after_filter = expr_filtered.shape[0]
     print(f"过滤后保留基因: {after_filter}/{before_filter} ({after_filter/before_filter*100:.1f}%)")
     
@@ -131,8 +133,8 @@ def create_brm_groups(expr, brm_gene):
     brm_expr = np.log2(expr.loc[brm_gene] + 1)
     brm_median = np.median(brm_expr)
     
-    # 创建分组
-    groups = np.where(brm_expr > brm_median, "High", "Low")
+    # 创建分组 (与notebook保持一致：使用>=而不是>)
+    groups = np.where(brm_expr >= brm_median, "High", "Low")
     groups_series = pd.Series(groups, index=expr.columns)
     
     print(f"高表达组: {sum(groups == 'High')}个样本")
