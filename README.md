@@ -141,10 +141,7 @@ python visualize_results.py
 
 ## 更新日志
 
-- 2024-XX-XX: 项目结构化重构
-- 2024-XX-XX: 添加CSV格式支持
-- 2024-XX-XX: 解决NumPy兼容性问题
-- 2024-XX-XX: 完成BRM基因差异表达分析
+
 
 ## 联系信息
 如有问题，请查看`doc/`目录下的详细分析报告。 
