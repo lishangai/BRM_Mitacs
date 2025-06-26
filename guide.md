@@ -153,6 +153,3 @@ nx.draw(G, with_labels=True, node_size=50,
 共表达网络 BRM相关基因网络图 PNG/GraphML
 质量控制 分组表达分布箱线图 PNG
 
-代码完整版：  
-https://gist.github.com/example/rsem_analysis.py  
-（包含所有依赖库和示例数据）

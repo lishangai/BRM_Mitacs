@@ -275,7 +275,7 @@ def save_results(deg_df, significant_genes, corr_df, significant_corr):
     print("- correlation_analysis_results.csv: 所有基因相关性结果")
     print("- significant_correlations.csv: 显著相关基因")
 
-def print_summary(brm_gene, expr, significant_genes, significant_corr, deg_df):
+def print_summary(brm_gene, expr, significant_genes, significant_corr, deg_df, corr_df):
     """
     打印分析总结
     """
@@ -287,15 +287,33 @@ def print_summary(brm_gene, expr, significant_genes, significant_corr, deg_df):
     print(f"显著相关基因数: {len(significant_corr)}")
     
     if len(significant_genes) > 0:
-        print(f"\nTop 10 上调基因:")
+        print(f"\nTop 10 显著上调基因 (padj < 0.05):")
         top_up = significant_genes[significant_genes['log2FC'] > 0].head(10)
         for _, row in top_up.iterrows():
             print(f"  {row['gene']}: log2FC={row['log2FC']:.3f}, padj={row['padj']:.2e}")
         
-        print(f"\nTop 10 下调基因:")
+        print(f"\nTop 10 显著下调基因 (padj < 0.05):")
         top_down = significant_genes[significant_genes['log2FC'] < 0].head(10)
         for _, row in top_down.iterrows():
             print(f"  {row['gene']}: log2FC={row['log2FC']:.3f}, padj={row['padj']:.2e}")
+    else:
+        print(f"\n未找到显著差异表达基因 (padj < 0.05)")
+    
+    # 添加相关性分析结果 (仅显示显著性基因 padj < 0.05)
+    if len(significant_corr) > 0:
+        print(f"\nTop 10 显著正相关基因 (padj < 0.05, rho > 0.3):")
+        # 按相关系数降序排列，取前10个正相关显著基因
+        top_pos_corr = significant_corr[significant_corr['rho'] > 0].sort_values('rho', ascending=False).head(10)
+        for _, row in top_pos_corr.iterrows():
+            print(f"  {row['gene']}: rho={row['rho']:.3f}, padj={row['padj']:.2e}")
+        
+        print(f"\nTop 10 显著负相关基因 (padj < 0.05, rho < -0.3):")
+        # 按相关系数升序排列，取前10个负相关显著基因
+        top_neg_corr = significant_corr[significant_corr['rho'] < 0].sort_values('rho', ascending=True).head(10)
+        for _, row in top_neg_corr.iterrows():
+            print(f"  {row['gene']}: rho={row['rho']:.3f}, padj={row['padj']:.2e}")
+    else:
+        print(f"\n未找到显著相关基因 (padj < 0.05, |rho| > 0.3)")
     
     # 统计信息
     print(f"\n=== 统计信息 ===")
@@ -303,6 +321,12 @@ def print_summary(brm_gene, expr, significant_genes, significant_corr, deg_df):
     print(f"FDR校正后 < 0.05的基因数: {sum(deg_df['padj'] < 0.05)}")
     print(f"|log2FC| > 1的基因数: {sum(abs(deg_df['log2FC']) > 1)}")
     print(f"|log2FC| > 2的基因数: {sum(abs(deg_df['log2FC']) > 2)}")
+    
+    # 相关性统计信息
+    print(f"总相关性p值 < 0.05的基因数: {sum(corr_df['pval'] < 0.05)}")
+    print(f"相关性FDR校正后 < 0.05的基因数: {sum(corr_df['padj'] < 0.05)}")
+    print(f"|rho| > 0.3的基因数: {sum(abs(corr_df['rho']) > 0.3)}")
+    print(f"|rho| > 0.5的基因数: {sum(abs(corr_df['rho']) > 0.5)}")
 
 def main():
     """
@@ -351,7 +375,7 @@ def main():
     save_results(deg_df, significant_genes, corr_df, significant_corr)
     
     # 6. 输出分析总结
-    print_summary(brm_gene, expr, significant_genes, significant_corr, deg_df)
+    print_summary(brm_gene, expr, significant_genes, significant_corr, deg_df, corr_df)
 
 if __name__ == "__main__":
     main() 

@@ -300,7 +300,7 @@ assert expr_filtered.shape[1] > 50, "Insufficient sample size"
 | Quality Metric | Status | Value | Standard |
 |----------------|--------|-------|----------|
 | **Data Completeness** | ✅ Pass | 100% | >99% |
-| **Gene Count** | ✅ Pass | 18,551 | >15,000 |
+| **Gene Count** | ✅ Pass | 18,570 | >15,000 |
 | **Sample Count** | ✅ Pass | 307 | >200 |
 | **Target Gene Present** | ✅ Pass | SMARCA2\|6595 | Must exist |
 | **Group Balance** | ✅ Pass | 50.2% vs 49.8% | 40-60% |
@@ -311,7 +311,7 @@ assert expr_filtered.shape[1] > 50, "Insufficient sample size"
 #### Complete Data Flow
 ```
 Original Data → Format Cleaning → Missing Value Handling → Gene Filtering → Final Analysis Data
-20,532×308 → 20,531×308 → 20,532×307 → 18,551×307 → 18,551×307
+20,532×308 → 20,531×308 → 20,532×307 → 18,570×307 → 18,570×307
 ```
 
 #### Quality Improvement Metrics
@@ -390,35 +390,35 @@ p_threshold = 0.05  # p-value threshold
 - **Total Significant DEGs**: 6,123 genes
 - **Upregulated Genes**: 3,236 (52.8%)
 - **Downregulated Genes**: 2,887 (47.2%)
-- **BRM Gene Itself**: Significantly upregulated (Log2FC = 1.56, p < 0.001)
+- **BRM Gene Itself**: Significantly upregulated (Log2FC = 1.555, padj = 1.44e-47)
 
 #### Top Significantly Upregulated Genes
-| Gene Name | Log2 Fold Change | P-value | Biological Significance |
-|-----------|------------------|---------|------------------------|
-| C10orf81 | 2.17 | < 0.001 | Unknown function open reading frame |
-| GPR12 | 1.91 | < 0.001 | G protein-coupled receptor |
-| HP | 1.88 | < 0.001 | Haptoglobin |
-| FCGR2C | 1.84 | < 0.001 | Fc gamma receptor |
-| SLC17A1 | 1.80 | < 0.001 | Solute carrier family transporter |
-| C20orf203 | 1.77 | < 0.001 | Unknown function open reading frame |
-| FCGR3B | 1.75 | < 0.001 | Fc gamma receptor |
-| GAGE12F | 1.73 | < 0.001 | Cancer-testis antigen family |
-| WDR78 | 1.72 | < 0.001 | WD repeat domain protein |
-| FCGR2A | 1.71 | < 0.001 | Fc gamma receptor |
+| Gene Name | Log2 Fold Change | Adjusted P-value | Biological Significance |
+|-----------|------------------|------------------|------------------------|
+| C10orf81\|79949 | 2.179 | 8.73e-09 | Unknown function open reading frame |
+| GPR12\|2835 | 1.964 | 5.76e-06 | G protein-coupled receptor |
+| HP\|3240 | 1.844 | 7.24e-05 | Haptoglobin |
+| CADM3\|57863 | 1.644 | 9.34e-05 | Cell adhesion molecule |
+| GLYATL2\|219970 | 1.619 | 9.43e-06 | Glycine-N-acyltransferase like 2 |
+| CXCL17\|284340 | 1.609 | 3.30e-05 | C-X-C motif chemokine ligand 17 |
+| SMARCA2\|6595 | 1.555 | 1.44e-47 | BRM gene itself |
+| FMO2\|2327 | 1.456 | 3.41e-05 | Flavin containing monooxygenase 2 |
+| GABRE\|2564 | 1.375 | 6.21e-07 | Gamma-aminobutyric acid receptor epsilon |
+| C8orf79\|57604 | 1.356 | 2.70e-07 | Unknown function open reading frame |
 
 #### Top Significantly Downregulated Genes
-| Gene Name | Log2 Fold Change | P-value | Biological Significance |
-|-----------|------------------|---------|------------------------|
-| SLC6A10P | -2.03 | < 0.001 | Solute carrier pseudogene |
-| GAGE12D | -1.89 | < 0.001 | Cancer-testis antigen family |
-| MAGEA4 | -1.73 | < 0.001 | Melanoma antigen family A4 |
-| SLC6A9 | -1.68 | < 0.001 | Glycine transporter |
-| MAGEA2B | -1.66 | < 0.001 | Melanoma antigen family A2B |
-| MAGEA12 | -1.63 | < 0.001 | Melanoma antigen family A12 |
-| MAGEA2 | -1.59 | < 0.001 | Melanoma antigen family A2 |
-| MAGEA6 | -1.58 | < 0.001 | Melanoma antigen family A6 |
-| MAGEA3 | -1.57 | < 0.001 | Melanoma antigen family A3 |
-| CT47A1 | -1.55 | < 0.001 | Cancer-testis antigen 47A1 |
+| Gene Name | Log2 Fold Change | Adjusted P-value | Biological Significance |
+|-----------|------------------|------------------|------------------------|
+| SLC6A10P\|386757 | -2.074 | 6.61e-06 | Solute carrier pseudogene |
+| GAGE12D\|100132399 | -1.915 | 4.91e-05 | Cancer-testis antigen family |
+| MAGEA4\|4103 | -1.778 | 6.40e-04 | Melanoma antigen family A4 |
+| FABP6\|2172 | -1.723 | 4.80e-05 | Fatty acid binding protein 6 |
+| GAGE2D\|729408 | -1.697 | 4.18e-04 | Cancer-testis antigen family |
+| SLC5A12\|159963 | -1.672 | 5.98e-07 | Solute carrier family 5 member 12 |
+| MAGEA11\|4110 | -1.656 | 4.95e-04 | Melanoma antigen family A11 |
+| CLDN19\|149461 | -1.615 | 2.22e-04 | Claudin 19 |
+| SSX4\|6759 | -1.611 | 6.91e-07 | SSX family member 4 |
+| LHX1\|3975 | -1.567 | 2.95e-03 | LIM homeobox 1 |
 
 ### Correlation Analysis Results
 
@@ -429,32 +429,32 @@ p_threshold = 0.05  # p-value threshold
 - **Average Correlation Coefficient**: |r| = 0.45
 
 #### Top Positively Correlated Genes
-| Gene Name | Correlation Coefficient | P-value | Functional Annotation |
-|-----------|------------------------|---------|----------------------|
-| SMARCA4 | 0.62 | < 0.001 | SWI/SNF complex core component |
-| ARID1A | 0.58 | < 0.001 | AT-rich interaction domain protein |
-| ARID1B | 0.55 | < 0.001 | AT-rich interaction domain protein |
-| SMARCC1 | 0.53 | < 0.001 | SWI/SNF complex component |
-| SMARCD1 | 0.51 | < 0.001 | SWI/SNF complex component |
-| SMARCB1 | 0.49 | < 0.001 | SWI/SNF complex component |
-| DPF2 | 0.47 | < 0.001 | Double PHD finger protein |
-| PBRM1 | 0.45 | < 0.001 | Polybromo protein |
-| BCL7A | 0.43 | < 0.001 | B-cell CLL/lymphoma 7A |
-| SMARCE1 | 0.41 | < 0.001 | SWI/SNF complex component |
+| Gene Name | Correlation Coefficient | Adjusted P-value | Functional Annotation |
+|-----------|------------------------|------------------|----------------------|
+| SMARCA2\|6595 | 1.000 | 0.00e+00 | BRM gene itself |
+| CFH\|3075 | 0.519 | 1.32e-18 | Complement factor H |
+| C18orf1\|753 | 0.490 | 3.70e-16 | Chromosome 18 open reading frame 1 |
+| KIAA2026\|158358 | 0.483 | 1.05e-15 | KIAA2026 protein |
+| VLDLR\|7436 | 0.467 | 1.80e-14 | Very low density lipoprotein receptor |
+| DENND4C\|55667 | 0.464 | 2.59e-14 | DENN domain containing 4C |
+| ZCCHC6\|79670 | 0.458 | 5.82e-14 | Zinc finger CCHC-type containing 6 |
+| STARD13\|90627 | 0.453 | 1.30e-13 | StAR related lipid transfer domain 13 |
+| PTGER2\|5732 | 0.447 | 3.15e-13 | Prostaglandin E receptor 2 |
+| ENTPD3\|956 | 0.445 | 4.29e-13 | Ectonucleoside triphosphate diphosphohydrolase 3 |
 
 #### Top Negatively Correlated Genes
-| Gene Name | Correlation Coefficient | P-value | Functional Annotation |
-|-----------|------------------------|---------|----------------------|
-| MAGEA1 | -0.52 | < 0.001 | Melanoma antigen family A1 |
-| MAGEA4 | -0.49 | < 0.001 | Melanoma antigen family A4 |
-| GAGE12D | -0.47 | < 0.001 | Cancer-testis antigen |
-| MAGEA6 | -0.45 | < 0.001 | Melanoma antigen family A6 |
-| MAGEA3 | -0.43 | < 0.001 | Melanoma antigen family A3 |
-| GAGE1 | -0.41 | < 0.001 | Cancer-testis antigen 1 |
-| MAGEA12 | -0.39 | < 0.001 | Melanoma antigen family A12 |
-| CT47A1 | -0.38 | < 0.001 | Cancer-testis antigen 47A1 |
-| MAGEA2B | -0.37 | < 0.001 | Melanoma antigen family A2B |
-| GAGE12F | -0.35 | < 0.001 | Cancer-testis antigen 12F |
+| Gene Name | Correlation Coefficient | Adjusted P-value | Functional Annotation |
+|-----------|------------------------|------------------|----------------------|
+| TARBP2\|6895 | -0.462 | 3.47e-14 | TARBP2, RISC loading complex RNA binding subunit |
+| CDK4\|1019 | -0.437 | 9.75e-13 | Cyclin dependent kinase 4 |
+| SMNDC1\|10285 | -0.431 | 2.54e-12 | Survival motor neuron domain containing 1 |
+| C17orf96\|100170841 | -0.429 | 3.20e-12 | Chromosome 17 open reading frame 96 |
+| MRPL3\|11222 | -0.419 | 1.36e-11 | Mitochondrial ribosomal protein L3 |
+| SSX4\|6759 | -0.413 | 2.68e-11 | SSX family member 4 |
+| CWF19L1\|55280 | -0.407 | 5.53e-11 | CWF19 like cell cycle control factor 1 |
+| RAN\|5901 | -0.407 | 5.53e-11 | RAN, member RAS oncogene family |
+| C17orf75\|64149 | -0.406 | 5.63e-11 | Chromosome 17 open reading frame 75 |
+| MCRS1\|10445 | -0.403 | 8.48e-11 | Microspherule protein 1 |
 
 ---
 
@@ -605,11 +605,11 @@ p_threshold = 0.05  # p-value threshold
 All analysis results have been systematically organized and saved in multiple formats for easy access and further analysis:
 
 #### Differential Expression Results
-- **`differential_expression_results.csv`** (2.0MB): Complete differential expression analysis results for all 18,551 genes
+- **`differential_expression_results.csv`** (2.0MB): Complete differential expression analysis results for all 18,570 genes
   - Columns: gene, log2FC, pval, mean_high, mean_low, statistic, padj
   - Contains statistical significance metrics and expression levels
 
-- **`significant_DEGs.csv`** (661KB): Filtered results containing only significantly differentially expressed genes (6,002 genes)
+- **`significant_DEGs.csv`** (661KB): Filtered results containing only significantly differentially expressed genes (6,123 genes)
   - Pre-filtered for FDR-adjusted p-value < 0.05
   - Sorted by absolute log2 fold change
 
@@ -646,9 +646,9 @@ Clean Data (20,531×308)
     ↓ [Handle missing values]  
 Complete Data (20,532×307)
     ↓ [Filter low expression genes]
-Final Dataset (18,551×307)
+Final Dataset (18,570×307)
     ↓ [Statistical Analysis]
-Results (6,002 DEGs + 614 Correlated Genes)
+Results (6,123 DEGs + 614 Correlated Genes)
 ```
 
 #### Code Availability
@@ -661,7 +661,7 @@ Results (6,002 DEGs + 614 Correlated Genes)
 #### Final Dataset Characteristics
 | Characteristic | Value | Quality Metric |
 |----------------|-------|----------------|
-| **Total Genes Analyzed** | 18,551 | 90.4% retention rate |
+| **Total Genes Analyzed** | 18,570 | 90.4% retention rate |
 | **Total Samples** | 307 | 99.7% retention rate |
 | **Data Completeness** | 100% | No missing values |
 | **Target Gene Status** | ✅ Present | SMARCA2\|6595 confirmed |
@@ -670,10 +670,10 @@ Results (6,002 DEGs + 614 Correlated Genes)
 #### Analysis Results Summary
 | Analysis Type | Significant Results | Percentage | FDR Threshold |
 |---------------|-------------------|------------|---------------|
-| **Differential Expression** | 6,002 genes | 32.4% | p < 0.05 |
+| **Differential Expression** | 6,123 genes | 33.0% | p < 0.05 |
 | **Positive Correlation** | 361 genes | 1.9% | \|r\| ≥ 0.3, p < 0.05 |
 | **Negative Correlation** | 253 genes | 1.4% | \|r\| ≥ 0.3, p < 0.05 |
-| **Total Significant** | 6,616 genes | 35.7% | Combined analysis |
+| **Total Significant** | 6,737 genes | 36.3% | Combined analysis |
 
 ### Reproducibility Information
 
