@@ -71,19 +71,46 @@ Thumbs.db
 *.log
 *.bak
 
-# 大型结果文件
+# 大型数据文件 - 排除所有大文件
+# H5AD文件 (AnnData格式)
 *.h5ad
 *.h5
 *.hdf5
+
+# 大型CSV/TSV文件
 *.csv.gz
 *.tsv.gz
+*.csv.bz2
+*.tsv.bz2
 
-# 图片文件 (如果不需要版本控制的话)
-# *.png
-# *.jpg
-# *.jpeg
-# *.pdf
-# *.eps
+# 特定的大文件
+data/processed/HGSC_data.h5ad
+data/processed/working.csv
+data/raw/illuminahiseq_rnaseqv2-RSEM_genes_normalized*.csv
+data/raw/singlecell/UMIcounts_HGSC.tsv
+data/raw/singlecell/annotation_HGSC.tsv
+results/brm_analysis_pipeline/processed_adata.h5ad
+
+
+
+
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+
+# 临时分析结果
+temp/
+tmp/
+cache/
 
 # 敏感信息
 .env.local
