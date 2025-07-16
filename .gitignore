@@ -94,7 +94,8 @@ results/brm_analysis_pipeline/cancer_cells_deg_results.csv
 results/brm_analysis_pipeline/gsea_results.csv
 results/brm_analysis_pipeline/umap_overview.png
 
-
+# 大型RNA-seq数据文件
+r_analysis/OV.rnaseqv2__illuminahiseq_rnaseqv2__unc_edu__Level_3__RSEM_genes__data.data.txt
 
 
 
