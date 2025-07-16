@@ -1,0 +1,301 @@
+============================================================
+=== BRM基因单细胞RNA-seq分析流程 ===
+============================================================
+
+> 运行环境信息:
+  - Python版本: 3.11.13
+  - 工作目录: F:\githubclone\BRM_Mitacs
+  - 项目根目录: F:\githubclone\BRM_Mitacs
+  - 脚本位置: f:\githubclone\BRM_Mitacs\src\brm_analysis_pipeline.py
+
+> 分析配置:
+  - 输入文件: F:\githubclone\BRM_Mitacs\data\processed\HGSC_data.h5ad
+  - 输出目录: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline
+  - 日志文件: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\analysis_log.txt
+  - 输入文件大小: 115.0 MB
+
+> 初始化设置...
+  - Matplotlib配置完成
+  - Scanpy详细程度设置为1
+
+> 检查依赖包...
+(+) 'harmonypy' 已安装，将用于批次校正。
+(+) 'gseapy' 已安装，将进行通路富集分析。
+
+============================================================
+开始执行分析流程...
+============================================================
+
+--- 步骤一：加载数据与质量控制 ---
+  > 正在从高效的H5AD文件加载数据:
+    - F:\githubclone\BRM_Mitacs\data\processed\HGSC_data.h5ad
+  > 原始数据: 19155 个细胞, 58037 个基因
+
+  > 正在进行质量控制...
+    1. 标记线粒体基因...
+       - 检测到 37 个线粒体基因
+    2. 计算质量控制指标...
+       - 质量控制指标统计:
+         * 每个细胞平均表达基因数: 2436.8
+         * 每个细胞平均总UMI数: 13083.0
+         * 线粒体基因表达比例平均值: 5.24%
+         * 线粒体基因表达比例中位数: 4.33%
+
+    3. 开始细胞和基因过滤...
+       a) 过滤表达基因数过少的细胞 (< 200个基因)...
+          - 移除了 37 个细胞 (0.2%)
+          - 剩余 19118 个细胞
+       b) 过滤低表达基因 (在少于3个细胞中表达)...
+          - 移除了 22902 个基因 (39.5%)
+          - 剩余 35135 个基因
+       c) 过滤线粒体基因表达比例过高的细胞 (> 20%)...
+          - 移除了 0 个高线粒体表达细胞 (0.0%)
+          - 剩余 19118 个细胞
+       d) 过滤表达基因数过多的细胞 (> 5000个基因，疑似双细胞)...
+          - 移除了 2183 个高基因表达细胞 (11.4%)
+          - 剩余 16935 个细胞
+
+  > 质量控制总结:
+    - 原始数据: 19155 个细胞, 58037 个基因
+    - 过滤后数据: 16935 个细胞, 35135 个基因
+    - 移除细胞: 2220 个 (11.6%)
+    - 移除基因: 22902 个 (39.5%)
+
+  > 过滤后质量指标:
+    - 每个细胞平均表达基因数: 1950.7 (范围: 207-4998)
+    - 每个细胞平均总UMI数: 8536.4 (范围: 1025.0-65926.0)
+    - 线粒体基因表达比例: 4.99% (范围: 0.00%-19.98%)
+
+--- 步骤二：预处理、降维与整合 ---
+
+  > 1. 数据标准化...
+     - 执行总计数标准化 (target_sum=1e4)...
+       * 标准化后每个细胞总计数: 10000.0
+     - 执行对数变换 (log1p)...
+       * 对数变换后表达值范围: 0.00 - 8.99
+
+  > 2. 高变基因识别...
+     - 参数设置: min_mean=0.0125, max_mean=3, min_disp=0.5
+     - 识别出 6961 个高变基因 (占总基因的 19.8%)
+     - 保存原始标准化数据到 .raw 属性...
+     - 筛选数据仅保留高变基因...
+     - 筛选后数据维度: 16935 个细胞 × 6961 个基因
+
+  > 3. 主成分分析 (PCA)...
+     - 执行数据缩放 (max_value=10)...
+       * 缩放前数据维度: 16935 个细胞 × 6961 个基因
+       * 缩放后表达值范围: -2.05 - 10.00
+     - 运行PCA (svd_solver='arpack')...
+       * PCA结果: 计算了 50 个主成分
+       * 前10个PC解释的方差: 7.2%
+       * 前50个PC解释50%方差, 前50个PC解释80%方差
+       * 总累积方差: 11.2%
+
+  > 4. Harmony批次校正...
+     - 检查批次变量...
+       * 发现 9 个样本:
+         - EOC3_pPer: 3814 个细胞
+         - EOC136_pMes: 3037 个细胞
+         - EOC115_pPer: 2052 个细胞
+         - EOC153_pOme: 1802 个细胞
+         - EOC204_pMes: 1707 个细胞
+         - EOC87_pPer: 1667 个细胞
+         - EOC372_pPer: 1203 个细胞
+         - EOC1127_pOme: 1178 个细胞
+         - EOC649_pOme: 475 个细胞
+     - 运行Harmony算法...
+       * Harmony校正完成，生成了 50 维校正后的PCA表示
+
+  > 5. 构建细胞邻近图...
+     - 参数设置: n_neighbors=10, n_pcs=40
+     - 使用表示: X_pca_harmony
+       * 邻近图构建完成
+
+  > 6. K-Means聚类...
+     - 参数设置: n_clusters=20, random_state=0
+     - 聚类结果: 生成了 20 个聚类
+       * 各聚类细胞数分布:
+         - 聚类 0: 243 个细胞
+         - 聚类 1: 216 个细胞
+         - 聚类 2: 400 个细胞
+         - 聚类 3: 1655 个细胞
+         - 聚类 4: 3163 个细胞
+         - 聚类 5: 399 个细胞
+         - 聚类 6: 541 个细胞
+         - 聚类 7: 1505 个细胞
+         - 聚类 8: 1934 个细胞
+         - 聚类 9: 697 个细胞
+         - 聚类 10: 1912 个细胞
+         - 聚类 11: 484 个细胞
+         - 聚类 12: 483 个细胞
+         - 聚类 13: 294 个细胞
+         - 聚类 14: 432 个细胞
+         - 聚类 15: 839 个细胞
+         - 聚类 16: 337 个细胞
+         - 聚类 17: 326 个细胞
+         - 聚类 18: 567 个细胞
+         - 聚类 19: 508 个细胞
+
+  > 7. UMAP降维可视化...
+     - 运行UMAP算法...
+       * UMAP完成，生成2D坐标
+       * X轴范围: [-8.02, 15.07]
+       * Y轴范围: [-8.11, 14.91]
+
+  > 8. 生成UMAP可视化...
+     - sample: 9 种不同值
+     - status: 2 种不同值
+     - cell_subtype: 9 种不同值
+     - treatment_phase: 1 种不同值
+     - 将绘制的注释: kmeans, sample, status, cell_subtype, treatment_phase
+  - 图表已保存: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\umap_overview.png
+
+  > 预处理和整合步骤完成!
+    - 最终数据维度: 16935 个细胞 × 6961 个高变基因
+    - 原始数据维度: 35135 个总基因
+    - 可用表示: ['X_pca', 'X_pca_harmony', 'X_umap']
+
+--- 步骤四：差异表达与通路富集分析 ---
+
+  > 1. 筛选目标细胞类型...
+     - 目标细胞类型: 'Ovarian.cancer.cell'
+     - 发现 9 种细胞类型:
+       * T.cell: 5138 个细胞
+       * Ovarian.cancer.cell: 4299 个细胞
+       * Myeloid.cell: 3908 个细胞
+       * Fibroblast: 2952 个细胞
+       * Plasma.cell: 279 个细胞
+       * B.cell: 196 个细胞
+       * Dendritic.cell: 70 个细胞
+       * Mast.cell: 54 个细胞
+       * Endothelial.cell: 39 个细胞
+     - 成功筛选出 4299 个卵巢癌细胞
+
+  > 2. 筛选治疗阶段...
+     - 目标治疗阶段: 'treatment-naive'
+     - 在癌细胞中发现 1 种治疗阶段:
+       * treatment-naive: 4299 个细胞
+     - 成功筛选出 4299 个初治癌细胞
+
+  > 3. 准备差异表达分析...
+     - 在初治癌细胞中发现 2 种状态:
+       * Refractory: 2257 个细胞
+       * Sensitive: 2042 个细胞
+
+     - 病人分布统计:
+       * 耐药病人数: 4
+       * 敏感病人数: 5
+
+  > 4. 执行差异表达分析...
+     - 比较组: 'Refractory' vs 'Sensitive' (对照组)
+     - 统计方法: Wilcoxon rank-sum test
+     - 分析基因数: 35135
+
+     - 差异表达分析完成!
+       * 总分析基因数: 35135
+       * 显著差异基因 (padj < 0.001): 4414
+       * 显著差异基因 (padj < 0.01): 5163
+       * 显著差异基因 (padj < 0.05): 5986
+       * 上调基因: 20266
+       * 下调基因: 12718
+       * 前3个上调基因: RPS28, ZFAS1, S100A1
+       * 前3个下调基因: HMGB2, AC016739.2, CORO1A
+
+     - 差异表达基因结果已保存至: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\cancer_cells_deg_results.csv
+
+  > 5. 通路富集分析 (GSEA)...
+     - 基因排序列表长度: 35135
+     - Score范围: -30.536 - 34.678
+     - 使用基因集: KEGG_2021_Human, GO_Biological_Process_2021
+     - GSEA分析完成，发现 3112 个富集通路
+     - GSEA结果已保存至: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\gsea_results.csv
+
+--- 步骤五：SMARCA2基因深度分析 ---
+
+  > 1. 检查目标基因...
+     - 目标基因: SMARCA2
+     - 成功找到目标基因 SMARCA2
+
+  > 2. 全体细胞中SMARCA2表达统计:
+     - 表达细胞数: 2070 / 16935 (12.2%)
+     - 表达均值: 0.127
+     - 表达中位数: 0.000
+     - 表达范围: 0.000 - 2.878
+
+  > 3. 生成全体细胞UMAP表达图...
+  - 图表已保存: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\smarca2_expression_umap.png
+
+  > 4. 初治癌细胞中SMARCA2表达分析:
+     - 发现状态分组: Sensitive, Refractory
+     - Sensitive组:
+       * 细胞数: 2042
+       * 表达细胞: 226 (11.1%)
+       * 表达均值: 0.105
+       * 表达中位数: 0.000
+     - Refractory组:
+       * 细胞数: 2257
+       * 表达细胞: 200 (8.9%)
+       * 表达均值: 0.072
+       * 表达中位数: 0.000
+     - 生成按状态分组的表达小提琴图...
+  - 图表已保存: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\smarca2_expression_in_cancer_cells.png
+
+--- 步骤5c：病人层面SMARCA2表达分析 ---
+
+  > 1. 数据验证...
+     - 癌细胞数据: 4299 个细胞
+     - 目标基因: SMARCA2
+
+  > 2. 构建病人层面数据...
+     - 总细胞数: 4299
+     - 病人数: 9
+
+  > 3. 计算病人层面表达均值...
+     - 成功计算了 9 个病人的表达均值
+     - 病人状态分布:
+       * Sensitive: 5 个病人
+       * Refractory: 4 个病人
+
+  > 4. 统计检验...
+     - 耐药组病人数量: 4
+     - 敏感组病人数量: 5
+     - 耐药组表达统计:
+       * 均值: 0.1150
+       * 中位数: 0.0886
+       * 标准差: 0.0799
+     - 敏感组表达统计:
+       * 均值: 0.1417
+       * 中位数: 0.1290
+       * 标准差: 0.0824
+
+  > 5. 统计检验结果:
+     - 检验方法: Mann-Whitney U test (双侧)
+     - 统计量: 6.00
+     - P值: 0.412698
+     - 显著性: ns (p >= 0.05)
+     - 效应量 (Common Language Effect Size): 0.4000
+
+  > 6. 生成可视化...
+  - 图表已保存: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\smarca2_patient_level_boxplot.png
+
+  > 7. 保存结果...
+     - 病人层面分析结果已保存至: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\smarca2_patient_level_analysis.csv
+     - 统计摘要已保存至: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\smarca2_statistical_summary.csv
+
+--- 步骤六：为Geneformer模拟准备文件 ---
+  > Geneformer输入文件已保存到: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\geneformer_input
+
+--- 保存最终处理数据 ---
+  > 保存最终AnnData对象到: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\processed_adata.h5ad
+
+============================================================
+=== 分析流程完成 ===
+  - 总运行时间: 5.4 分钟
+  - 最终AnnData保存至: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\processed_adata.h5ad
+  - 所有结果保存至: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline
+============================================================
+
+> 清理和结束:
+  - 恢复标准输出
+  - 关闭日志文件
+  - 完整日志已保存至: F:\githubclone\BRM_Mitacs\results\brm_analysis_pipeline\analysis_log.txt

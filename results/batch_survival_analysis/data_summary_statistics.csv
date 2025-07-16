@@ -1,0 +1,14 @@
+metric,value
+total_genes,20531.0
+total_samples,295.0
+death_events,179.0
+censored_events,116.0
+expr_min,0.0
+expr_max,1408349.658
+expr_mean,970.6651463318881
+expr_std,4195.45944080347
+zero_proportion_pct,12.984185138802093
+time_min_days,8.0
+time_max_days,4624.0
+time_median_days,956.0
+time_mean_days,1105.4440677966102

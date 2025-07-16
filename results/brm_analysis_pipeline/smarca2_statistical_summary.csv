@@ -1,0 +1,2 @@
+refractory_patients,sensitive_patients,refractory_mean,sensitive_mean,mannwhitney_statistic,p_value,effect_size,significance
+4,5,0.11500994723308804,0.14169669128594542,6.0,0.4126984126984127,0.4,ns (p >= 0.05)

@@ -1,0 +1,168 @@
+=== BRM基因RNA-seq数据分析 ===
+
+输入文件: F:\githubclone\BRM_Mitacs\data\processed\working.csv
+输出目录: F:\githubclone\BRM_Mitacs\results\brm_analysis_csv
+正在加载数据...
+成功读取CSV文件
+原始数据维度: (20531, 307)
+基因数: 20531, 样本数: 307
+
+数据预览 (加载后):
+                   TCGA-04-1348-01A-01R-1565-13  ...  TCGA-WR-A838-01A-12R-A406-31
+Hybridization REF                                ...                              
+?|100130426                              0.0000  ...                        0.0000
+?|100133144                             27.3245  ...                      156.2168
+?|100134869                             45.8134  ...                      104.8366
+?|10357                                 24.0979  ...                       32.6951
+?|10431                               1509.2767  ...                     1129.1811
+
+[5 rows x 307 columns]
+
+打印纯数据预览 (无索引, 5x5):
+[[0.0000000e+00 0.0000000e+00 6.6190000e-01 0.0000000e+00 0.0000000e+00]
+ [2.7324500e+01 2.1966100e+01 2.7261100e+01 1.8606200e+01 1.2999800e+01]
+ [4.5813400e+01 3.6627600e+01 5.3161900e+01 1.4467700e+01 9.2994000e+00]
+ [2.4097900e+01 9.1146000e+00 3.2103000e+01 3.0249800e+01 6.8546000e+01]
+ [1.5092767e+03 6.9661460e+02 1.0564202e+03 1.3725640e+03 1.4581889e+03]]
+
+打印行索引预览 (前5个):
+Index(['?|100130426', '?|100133144', '?|100134869', '?|10357', '?|10431'], dtype='object', name='Hybridization REF')
+
+打印列索引预览 (前5个):
+Index(['TCGA-04-1348-01A-01R-1565-13', 'TCGA-04-1357-01A-01R-1565-13',
+       'TCGA-04-1362-01A-01R-1565-13', 'TCGA-04-1364-01A-01R-1565-13',
+       'TCGA-04-1365-01A-01R-1565-13'],
+      dtype='object')
+清理数据，转换为数值型...
+过滤0值占比 > 50%的列（样本）...
+删除了 0 个0值占比 > 50%的列
+过滤0值占比 > 50%的行（基因）...
+删除了 2568 个0值占比 > 50%的行
+清理后数据维度: (17963, 307)
+警告: 未找到BRM或SMARCA2基因
+可能的BRM相关基因: ['BRMS1L|84312', 'BRMS1|25855', 'PBRM1|55193', 'SMARCA2|6595']
+选择SMARCA2基因: SMARCA2|6595
+为 SMARCA2|6595 表达分布创建可视化图表...
+分布图已保存到: F:\githubclone\BRM_Mitacs\results\brm_analysis_csv\SMARCA2_expression_distribution.png
+基于 SMARCA2|6595 表达水平创建分组...
+低表达组 (<= 40%, 9.886): 123个样本
+高表达组 (>= 60%, 10.368): 123个样本
+中间组: 61个样本
+
+为下游分析筛选样本，仅保留高低表达组，共 246 个样本。
+进行差异表达分析...
+处理进度: 0/17963
+处理进度: 1000/17963
+处理进度: 2000/17963
+处理进度: 3000/17963
+处理进度: 4000/17963
+处理进度: 5000/17963
+处理进度: 6000/17963
+处理进度: 7000/17963
+处理进度: 8000/17963
+处理进度: 9000/17963
+处理进度: 10000/17963
+处理进度: 11000/17963
+处理进度: 12000/17963
+处理进度: 13000/17963
+处理进度: 14000/17963
+处理进度: 15000/17963
+处理进度: 16000/17963
+处理进度: 17000/17963
+显著差异基因数: 5928
+上调基因数: 3185
+下调基因数: 2743
+计算与SMARCA2|6595的相关性...
+显著正相关基因数: 622
+显著负相关基因数: 471
+保存分析结果到: F:\githubclone\BRM_Mitacs\results\brm_analysis_csv
+结果已保存:
+- F:\githubclone\BRM_Mitacs\results\brm_analysis_csv\differential_expression_results.csv
+- F:\githubclone\BRM_Mitacs\results\brm_analysis_csv\significant_DEGs.csv
+- F:\githubclone\BRM_Mitacs\results\brm_analysis_csv\correlation_analysis_results.csv
+- F:\githubclone\BRM_Mitacs\results\brm_analysis_csv\significant_correlations.csv
+
+=== 分析总结 ===
+分析基因: SMARCA2|6595
+总基因数: 17963
+总样本数: 246
+显著差异基因数: 5928
+显著相关基因数: 1093
+
+Top 15 显著上调基因 (padj < 0.05):
+  GPR12|2835: log2FC=2.573, padj=7.28e-08
+  C10orf81|79949: log2FC=2.390, padj=1.64e-08
+  GLYATL2|219970: log2FC=2.054, padj=1.38e-06
+  FMO2|2327: log2FC=1.930, padj=1.11e-06
+  HP|3240: log2FC=1.918, padj=2.63e-04
+  CXCL17|284340: log2FC=1.916, padj=1.22e-05
+  CADM3|57863: log2FC=1.780, padj=1.50e-04
+  RELN|5649: log2FC=1.745, padj=7.66e-06
+  TACR1|6869: log2FC=1.687, padj=2.14e-07
+  IRX3|79191: log2FC=1.672, padj=1.63e-05
+  IRX5|10265: log2FC=1.636, padj=2.56e-04
+  CRISP3|10321: log2FC=1.580, padj=1.17e-03
+  SOX2|6657: log2FC=1.576, padj=7.22e-04
+  C8orf79|57604: log2FC=1.573, padj=6.92e-08
+  GSDMC|56169: log2FC=1.548, padj=1.92e-06
+
+Top 15 显著下调基因 (padj < 0.05):
+  SLC6A10P|386757: log2FC=-2.656, padj=1.06e-07
+  MAGEA4|4103: log2FC=-2.450, padj=4.17e-05
+  SLC5A12|159963: log2FC=-1.942, padj=1.28e-07
+  CLDN19|149461: log2FC=-1.903, padj=1.34e-04
+  CT45A5|441521: log2FC=-1.873, padj=4.17e-05
+  FABP6|2172: log2FC=-1.871, padj=1.40e-04
+  IGF2BP1|10642: log2FC=-1.850, padj=7.07e-06
+  MAGEA11|4110: log2FC=-1.847, padj=2.54e-04
+  CT45A1|541466: log2FC=-1.839, padj=8.98e-06
+  CT45A2|728911: log2FC=-1.829, padj=1.38e-05
+  CLDN6|9074: log2FC=-1.828, padj=9.50e-05
+  LHX1|3975: log2FC=-1.813, padj=1.70e-03
+  PADI3|51702: log2FC=-1.800, padj=3.82e-06
+  MAGEA9B|728269: log2FC=-1.779, padj=9.83e-05
+  CPLX2|10814: log2FC=-1.772, padj=1.17e-04
+
+Top 15 显著正相关基因 (padj < 0.05, rho > 0.3):
+  CFH|3075: rho=0.563, padj=5.31e-18
+  C18orf1|753: rho=0.525, padj=4.56e-15
+  VLDLR|7436: rho=0.519, padj=1.03e-14
+  KIAA2026|158358: rho=0.513, padj=2.43e-14
+  DENND4C|55667: rho=0.501, padj=1.58e-13
+  ZCCHC6|79670: rho=0.498, padj=1.93e-13
+  STARD13|90627: rho=0.494, padj=3.04e-13
+  NRP2|8828: rho=0.489, padj=6.32e-13
+  SFMBT2|57713: rho=0.487, padj=7.32e-13
+  GNAQ|2776: rho=0.484, padj=1.03e-12
+  SLC1A1|6505: rho=0.484, padj=1.03e-12
+  EHD2|30846: rho=0.482, padj=1.19e-12
+  ENTPD3|956: rho=0.479, padj=1.60e-12
+  PTGER2|5732: rho=0.479, padj=1.60e-12
+  DENND3|22898: rho=0.472, padj=4.33e-12
+
+Top 15 显著负相关基因 (padj < 0.05, rho < -0.3):
+  TARBP2|6895: rho=-0.497, padj=2.15e-13
+  SMNDC1|10285: rho=-0.482, padj=1.19e-12
+  CDK4|1019: rho=-0.481, padj=1.27e-12
+  C17orf96|100170841: rho=-0.475, padj=2.68e-12
+  MRPL3|11222: rho=-0.449, padj=7.45e-11
+  METTL1|4234: rho=-0.448, padj=7.99e-11
+  SLC5A12|159963: rho=-0.448, padj=8.72e-11
+  C12orf73|728568: rho=-0.443, padj=1.27e-10
+  TAF5|6877: rho=-0.443, padj=1.27e-10
+  MCRS1|10445: rho=-0.441, padj=1.77e-10
+  RAN|5901: rho=-0.439, padj=1.99e-10
+  CWF19L1|55280: rho=-0.434, padj=3.56e-10
+  DCLRE1A|9937: rho=-0.433, padj=4.07e-10
+  C17orf75|64149: rho=-0.433, padj=4.18e-10
+  CCDC58|131076: rho=-0.432, padj=4.18e-10
+
+=== 统计信息 ===
+总p值 < 0.05的基因数: 7754
+FDR校正后 < 0.05的基因数: 5929
+|log2FC| > 1的基因数: 240
+|log2FC| > 2的基因数: 5
+总相关性p值 < 0.05的基因数: 8611
+相关性FDR校正后 < 0.05的基因数: 7203
+|rho| > 0.3的基因数: 1094
+|rho| > 0.5的基因数: 6
