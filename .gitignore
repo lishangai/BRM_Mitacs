@@ -90,6 +90,9 @@ data/raw/illuminahiseq_rnaseqv2-RSEM_genes_normalized*.csv
 data/raw/singlecell/UMIcounts_HGSC.tsv
 data/raw/singlecell/annotation_HGSC.tsv
 results/brm_analysis_pipeline/processed_adata.h5ad
+results/brm_analysis_pipeline/cancer_cells_deg_results.csv
+results/brm_analysis_pipeline/gsea_results.csv
+results/brm_analysis_pipeline/umap_overview.png
 
 
 
