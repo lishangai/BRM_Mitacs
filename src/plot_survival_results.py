@@ -224,12 +224,12 @@ def plot_km_curves_from_results(results_df, expr_df, survival_df, output_dir, to
                 right_index=True
             )
             
-            # 分组
-            low_quantile = merged_df['expression'].quantile(0.25)
-            high_quantile = merged_df['expression'].quantile(0.75)
-            
-            high_group = merged_df[merged_df['expression'] >= high_quantile]
+            # 分组（最低40% vs 最高40%，丢弃中间20%）
+            low_quantile = merged_df['expression'].quantile(0.40)
+            high_quantile = merged_df['expression'].quantile(0.60)
             low_group = merged_df[merged_df['expression'] <= low_quantile]
+            high_group = merged_df[merged_df['expression'] >= high_quantile]
+            # 中间组不参与绘图/检验
             
             if len(high_group) < 5 or len(low_group) < 5:
                 logger.warning(f"⚠️ 基因 {gene_name} 分组样本数太少，跳过")

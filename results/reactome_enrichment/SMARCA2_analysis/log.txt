@@ -1,0 +1,13 @@
+2025-08-13 01:19:22 - INFO - === Reactome 富集分析（API）===
+2025-08-13 01:19:22 - INFO - 载入基因：原始 5928，清洗去重后 5928
+2025-08-13 01:19:22 - INFO - 提交标识符至 Reactome AnalysisService…
+2025-08-13 01:19:24 - INFO - 获取 token: MjAyNTA4MTMwMzQwMjJfMTI2NDE%3D
+2025-08-13 01:19:26 - INFO - 标识符映射统计（Reactome 口径）：
+2025-08-13 01:19:26 - INFO -   - 成功映射: 0
+2025-08-13 01:19:26 - INFO -   - 未映射:   0
+2025-08-13 01:19:26 - WARNING - 通过 REST /token/.../pathways 获取失败，将退回 reactome2py：404 Client Error:  for url: https://reactome.org/AnalysisService/token/MjAyNTA4MTMwMzQwMjJfMTI2NDE%3D/pathways?resource=TOTAL&order=ASC&sortBy=ENTITIES_FDR&pageSize=2000
+2025-08-13 01:19:26 - INFO - 使用 reactome2py 备用方案获取通路结果…
+2025-08-13 01:19:27 - INFO - 保存完整通路结果: reactome_pathways_all.csv (1 行)
+2025-08-13 01:19:27 - INFO - 显著通路（阈值 0.05）: 0 条 → reactome_pathways_significant.csv
+2025-08-13 01:19:27 - WARNING - 无显著通路可供下载通路图。
+2025-08-13 01:19:27 - INFO - 分析完成。输出目录：results\reactome_enrichment\SMARCA2_analysis

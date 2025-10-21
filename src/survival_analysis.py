@@ -112,26 +112,26 @@ def perform_survival_analysis(expression_file: Path, clinical_file: Path, target
         
     print(f"  - 找到 {len(merged_df)} 个具有完整生存数据的样本。")
 
-    # 6. 根据基因表达的四分位数创建高表达组和低表达组
-    low_quantile = merged_df[f"{target_gene}_expression"].quantile(0.25)
-    high_quantile = merged_df[f"{target_gene}_expression"].quantile(0.75)
+    # 6. 根据基因表达的40/60百分位创建高表达组和低表达组
+    low_quantile = merged_df[f"{target_gene}_expression"].quantile(0.40)
+    high_quantile = merged_df[f"{target_gene}_expression"].quantile(0.60)
     
-    # 根据分位数定义分组
+    # 根据分位数定义分组（仅保留两端，丢弃中间20%）
     merged_df['group'] = np.nan
     merged_df.loc[merged_df[f"{target_gene}_expression"] >= high_quantile, 'group'] = 'High'
     merged_df.loc[merged_df[f"{target_gene}_expression"] <= low_quantile, 'group'] = 'Low'
     
-    print(f"  - 已根据表达值的四分位数进行分组 (低-25%: <= {low_quantile:.2f}, 高-25%: >= {high_quantile:.2f})")
+    print(f"  - 已根据表达值的40/60百分位进行分组 (低-40%: <= {low_quantile:.2f}, 高-40%: >= {high_quantile:.2f})")
 
-    # 筛选出高表达和低表达组的样本用于分析
+    # 筛选出高表达和低表达组的样本用于分析（丢弃中间20%）
     analysis_data = merged_df.dropna(subset=['group'])
     
     print(f"  - 原始样本数 (有生存数据): {len(merged_df)}")
     print(f"  - 分析用样本数 (高/低表达组): {len(analysis_data)}")
     high_group_count = len(analysis_data[analysis_data['group'] == 'High'])
     low_group_count = len(analysis_data[analysis_data['group'] == 'Low'])
-    print(f"  - 高表达组 (top 25%) 样本数: {high_group_count}")
-    print(f"  - 低表达组 (bottom 25%) 样本数: {low_group_count}")
+    print(f"  - 高表达组 (top 40%) 样本数: {high_group_count}")
+    print(f"  - 低表达组 (bottom 40%) 样本数: {low_group_count}")
 
     if high_group_count == 0 or low_group_count == 0:
         print("错误: 高表达组或低表达组中没有样本，无法进行分析。")

@@ -89,73 +89,29 @@ Index(['TCGA-04-1348-01A-01R-1565-13', 'TCGA-04-1357-01A-01R-1565-13',
 显著差异基因数: 5928
 显著相关基因数: 1093
 
-Top 15 显著上调基因 (padj < 0.05):
-  GPR12|2835: log2FC=2.573, padj=7.28e-08
-  C10orf81|79949: log2FC=2.390, padj=1.64e-08
-  GLYATL2|219970: log2FC=2.054, padj=1.38e-06
-  FMO2|2327: log2FC=1.930, padj=1.11e-06
-  HP|3240: log2FC=1.918, padj=2.63e-04
-  CXCL17|284340: log2FC=1.916, padj=1.22e-05
-  CADM3|57863: log2FC=1.780, padj=1.50e-04
-  RELN|5649: log2FC=1.745, padj=7.66e-06
-  TACR1|6869: log2FC=1.687, padj=2.14e-07
-  IRX3|79191: log2FC=1.672, padj=1.63e-05
-  IRX5|10265: log2FC=1.636, padj=2.56e-04
-  CRISP3|10321: log2FC=1.580, padj=1.17e-03
-  SOX2|6657: log2FC=1.576, padj=7.22e-04
-  C8orf79|57604: log2FC=1.573, padj=6.92e-08
-  GSDMC|56169: log2FC=1.548, padj=1.92e-06
+Top 10 显著差异表达基因 (按padj排序):
+  CFH|3075: log2FC=1.435, padj=1.32e-11
+  C18orf1|753: log2FC=1.038, padj=3.69e-11
+  KIAA2026|158358: log2FC=0.644, padj=6.10e-11
+  TARBP2|6895: log2FC=-0.556, padj=1.82e-10
+  DENND4C|55667: log2FC=0.588, padj=4.63e-10
+  LOC92973|92973: log2FC=1.106, padj=1.60e-09
+  VLDLR|7436: log2FC=0.922, padj=1.60e-09
+  ENTPD3|956: log2FC=1.456, padj=4.06e-09
+  STARD13|90627: log2FC=0.737, padj=4.06e-09
+  ZCCHC6|79670: log2FC=0.513, padj=4.19e-09
 
-Top 15 显著下调基因 (padj < 0.05):
-  SLC6A10P|386757: log2FC=-2.656, padj=1.06e-07
-  MAGEA4|4103: log2FC=-2.450, padj=4.17e-05
-  SLC5A12|159963: log2FC=-1.942, padj=1.28e-07
-  CLDN19|149461: log2FC=-1.903, padj=1.34e-04
-  CT45A5|441521: log2FC=-1.873, padj=4.17e-05
-  FABP6|2172: log2FC=-1.871, padj=1.40e-04
-  IGF2BP1|10642: log2FC=-1.850, padj=7.07e-06
-  MAGEA11|4110: log2FC=-1.847, padj=2.54e-04
-  CT45A1|541466: log2FC=-1.839, padj=8.98e-06
-  CT45A2|728911: log2FC=-1.829, padj=1.38e-05
-  CLDN6|9074: log2FC=-1.828, padj=9.50e-05
-  LHX1|3975: log2FC=-1.813, padj=1.70e-03
-  PADI3|51702: log2FC=-1.800, padj=3.82e-06
-  MAGEA9B|728269: log2FC=-1.779, padj=9.83e-05
-  CPLX2|10814: log2FC=-1.772, padj=1.17e-04
-
-Top 15 显著正相关基因 (padj < 0.05, rho > 0.3):
+Top 10 显著相关基因 (按padj排序):
   CFH|3075: rho=0.563, padj=5.31e-18
   C18orf1|753: rho=0.525, padj=4.56e-15
   VLDLR|7436: rho=0.519, padj=1.03e-14
   KIAA2026|158358: rho=0.513, padj=2.43e-14
   DENND4C|55667: rho=0.501, padj=1.58e-13
   ZCCHC6|79670: rho=0.498, padj=1.93e-13
+  TARBP2|6895: rho=-0.497, padj=2.15e-13
   STARD13|90627: rho=0.494, padj=3.04e-13
   NRP2|8828: rho=0.489, padj=6.32e-13
   SFMBT2|57713: rho=0.487, padj=7.32e-13
-  GNAQ|2776: rho=0.484, padj=1.03e-12
-  SLC1A1|6505: rho=0.484, padj=1.03e-12
-  EHD2|30846: rho=0.482, padj=1.19e-12
-  ENTPD3|956: rho=0.479, padj=1.60e-12
-  PTGER2|5732: rho=0.479, padj=1.60e-12
-  DENND3|22898: rho=0.472, padj=4.33e-12
-
-Top 15 显著负相关基因 (padj < 0.05, rho < -0.3):
-  TARBP2|6895: rho=-0.497, padj=2.15e-13
-  SMNDC1|10285: rho=-0.482, padj=1.19e-12
-  CDK4|1019: rho=-0.481, padj=1.27e-12
-  C17orf96|100170841: rho=-0.475, padj=2.68e-12
-  MRPL3|11222: rho=-0.449, padj=7.45e-11
-  METTL1|4234: rho=-0.448, padj=7.99e-11
-  SLC5A12|159963: rho=-0.448, padj=8.72e-11
-  C12orf73|728568: rho=-0.443, padj=1.27e-10
-  TAF5|6877: rho=-0.443, padj=1.27e-10
-  MCRS1|10445: rho=-0.441, padj=1.77e-10
-  RAN|5901: rho=-0.439, padj=1.99e-10
-  CWF19L1|55280: rho=-0.434, padj=3.56e-10
-  DCLRE1A|9937: rho=-0.433, padj=4.07e-10
-  C17orf75|64149: rho=-0.433, padj=4.18e-10
-  CCDC58|131076: rho=-0.432, padj=4.18e-10
 
 === 统计信息 ===
 总p值 < 0.05的基因数: 7754

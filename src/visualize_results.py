@@ -240,8 +240,10 @@ def create_volcano_plot(deg_df: pd.DataFrame, output_dir: Path, target_gene: str
 def create_expression_distribution(expr_filtered: pd.DataFrame, target_gene_full_name: str, output_dir: Path,
                                    target_gene: str):
     """
-    Create target gene expression distribution plot, styled for publication.
-    This combines a histogram and a violin+box plot with integrated statistical annotation.
+    Create target gene expression distribution plot (3 panels):
+      - Panel A: Histogram with mean/median and legend (使用全部样本)
+      - Panel B: Box plot by groups with n annotations（最低40% vs 最高40%）
+      - Panel C: Violin plot by groups with mean/median lines（最低40% vs 最高40%）
     """
     print(f"Creating {target_gene} expression distribution...")
 
@@ -254,67 +256,99 @@ def create_expression_distribution(expr_filtered: pd.DataFrame, target_gene_full
     target_expr = np.log2(expr_filtered.loc[target_gene_full_name] + 1)
     target_median = np.median(target_expr)
     target_mean = np.mean(target_expr)
-    groups = pd.Series(np.where(target_expr > target_median, "High", "Low"), index=target_expr.index)
-    
-    low_expr = target_expr[groups == 'Low']
-    high_expr = target_expr[groups == 'High']
-    
-    # --- Statistical Analysis ---
+
+    # 40/60 百分位阈值（丢弃中间 20%）
+    p40 = np.percentile(target_expr, 40)
+    p60 = np.percentile(target_expr, 60)
+    low_mask = target_expr <= p40
+    high_mask = target_expr >= p60
+
+    # 仅保留两端样本用于组间比较
+    low_expr = target_expr[low_mask]
+    high_expr = target_expr[high_mask]
+
+    # --- Statistical Analysis (仅两端样本) ---
     from scipy import stats
     statistic, p_value = stats.mannwhitneyu(low_expr, high_expr, alternative='two-sided')
-    if p_value < 0.001: p_text = '***'
-    elif p_value < 0.01: p_text = '**'
-    elif p_value < 0.05: p_text = '*'
-    else: p_text = f'p = {p_value:.2f}'
+    p_text = f"{p_value:.2e}"
 
-    # --- Plotting (2-panel layout) ---
-    fig, axes = plt.subplots(1, 2, figsize=(12, 6), gridspec_kw={'width_ratios': [1, 1.2]})
-    fig.suptitle(f'{target_gene} Expression Analysis', fontsize=16, fontweight='bold')
+    # 为箱线图/提琴图准备数据（仅两端样本）
+    plot_data = pd.concat([
+        pd.DataFrame({'Expression': low_expr, 'Group': 'Low'}),
+        pd.DataFrame({'Expression': high_expr, 'Group': 'High'})
+    ], axis=0)
 
-    # Panel A: Histogram
+    # --- Figure (3-panel layout) ---
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6), gridspec_kw={'width_ratios': [1.2, 1, 1]})
+    # 主标题包含检验信息
+    fig.suptitle(f"{target_gene} Expression Analysis (Mann-Whitney U test p-value: {p_text})",
+                 fontsize=16, fontweight='bold')
+
+    # =====================
+    # Panel A: Histogram（使用全部样本的分布）
+    # =====================
     ax1 = axes[0]
-    sns.histplot(target_expr, bins=25, ax=ax1, color=colors_pub['blue'], alpha=0.7, edgecolor='white')
-    ax1.axvline(target_median, color=colors_pub['red'], linestyle='--', linewidth=2, label=f'Median: {target_median:.2f}')
-    ax1.set_title('A. Overall Distribution', loc='left', fontsize=14, fontweight='bold')
+    sns.histplot(target_expr, bins=30, ax=ax1, color=colors_pub['blue'], alpha=0.7, edgecolor='white')
+
+    # 均值 / 中位数线
+    ax1.axvline(target_median, color=colors_pub['red'], linestyle=(0, (5, 5)), linewidth=2, label=f'Median: {target_median:.2f}')
+    ax1.axvline(target_mean, color=colors_pub['orange'], linestyle='-', linewidth=2, label=f'Mean: {target_mean:.2f}')
+
+    ax1.set_title(f'{target_gene} Expression Distribution', loc='left', fontsize=14, fontweight='bold')
     ax1.set_xlabel(f'{target_gene} Expression (log2(TPM+1))', fontweight='bold')
     ax1.set_ylabel('Number of Samples', fontweight='bold')
-    ax1.legend()
+    ax1.legend(frameon=True)
     sns.despine(ax=ax1)
 
-    # Panel B: Violin + Box Plot with Stats
+    # =====================
+    # Panel B: Box Plot（仅两端样本）
+    # =====================
     ax2 = axes[1]
-    plot_data = pd.DataFrame({'Expression': target_expr, 'Group': groups})
-    sns.violinplot(x='Group', y='Expression', data=plot_data, order=['Low', 'High'], ax=ax2,
-                   palette=[colors_pub['light_blue'], colors_pub['light_red']], inner=None, linewidth=1.5)
-    
-    # Overlay a stylish boxplot inside the violin
     sns.boxplot(x='Group', y='Expression', data=plot_data, order=['Low', 'High'], ax=ax2,
-                width=0.2, boxprops={'zorder': 2, 'facecolor': 'white'},
-                whiskerprops={'linewidth': 1.5},
-                capprops={'linewidth': 1.5},
+                palette=[colors_pub['light_blue'], colors_pub['light_red']], width=0.5,
+                showcaps=True, boxprops={'zorder': 2}, whiskerprops={'linewidth': 1.5},
                 medianprops={'color': 'black', 'linewidth': 1.5})
 
-    ax2.set_title('B. Comparison by Expression Group', loc='left', fontsize=14, fontweight='bold')
-    ax2.set_xlabel('Median-based Group', fontweight='bold')
-    ax2.set_ylabel('') # Y-axis label is shared
-    ax2.set_xticklabels([f'Low (n={len(low_expr)})', f'High (n={len(high_expr)})'])
+    # 标注每组样本量 n
+    n_low, n_high = len(low_expr), len(high_expr)
+    y_max2 = plot_data['Expression'].max()
+    ax2.text(0, y_max2 + (y_max2 * 0.02), f"n={n_low}", ha='center', va='bottom', fontsize=10)
+    ax2.text(1, y_max2 + (y_max2 * 0.02), f"n={n_high}", ha='center', va='bottom', fontsize=10)
+
+    ax2.set_title(f'{target_gene} Expression by Groups', loc='left', fontsize=14, fontweight='bold')
+    ax2.set_xlabel('')
+    ax2.set_ylabel(f'{target_gene} Expression (log2(TPM+1))', fontweight='bold')
     sns.despine(ax=ax2)
 
-    # Add statistical annotation bracket
-    y_max = target_expr.max()
-    bracket_y = y_max * 1.05
-    text_y = y_max * 1.1
-    ax2.plot([0, 0, 1, 1], [bracket_y, bracket_y, bracket_y, bracket_y], lw=1.5, c='k')
-    ax2.text(0.5, text_y, p_text, ha='center', va='bottom', color='k', fontsize=12)
-    ax2.set_ylim(bottom=target_expr.min()*0.9, top=y_max * 1.2)
+    # =====================
+    # Panel C: Violin Plot（仅两端样本）
+    # =====================
+    ax3 = axes[2]
+    sns.violinplot(x='Group', y='Expression', data=plot_data, order=['Low', 'High'], ax=ax3,
+                   palette=[colors_pub['light_blue'], colors_pub['light_red']], inner=None, cut=0)
 
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    # 叠加均值/中位数线（每组）
+    stats_df = plot_data.groupby('Group')['Expression'].agg(['mean', 'median'])
+    for i, grp in enumerate(['Low', 'High']):
+        if grp in stats_df.index:
+            m = stats_df.loc[grp, 'mean']
+            med = stats_df.loc[grp, 'median']
+            ax3.hlines(m, i - 0.35, i + 0.35, colors='k', linestyles='-', lw=2)
+            ax3.hlines(med, i - 0.35, i + 0.35, colors='k', linestyles='--', lw=2)
+
+    ax3.set_title(f'{target_gene} Expression Density Distribution', loc='left', fontsize=14, fontweight='bold')
+    ax3.set_xlabel('')
+    ax3.set_ylabel(f'{target_gene} Expression (log2(TPM+1))', fontweight='bold')
+    sns.despine(ax=ax3)
+
+    # 不再强制统一三个子图的 y 轴上界
+
+    plt.tight_layout(rect=[0, 0, 1, 0.92])
     output_path = output_dir / f'{target_gene.lower()}_expression_distribution'
     print(f"  Saving expression distribution plot to {output_path}...")
     plt.savefig(f'{output_path}.png', dpi=600, bbox_inches='tight', facecolor='white')
     plt.savefig(f'{output_path}.pdf', bbox_inches='tight', facecolor='white')
     plt.savefig(f'{output_path}.eps', bbox_inches='tight', facecolor='white')
-    # plt.show()
     plt.close()
 
 
@@ -453,7 +487,7 @@ def create_correlation_plots(corr_df: pd.DataFrame, significant_corr: pd.DataFra
     # Cap the value to avoid extreme outliers stretching the axis
     cap = corr_df_filtered['-log10_padj'].quantile(0.999)
     if pd.notna(cap) and cap > 0:
-    corr_df_filtered['-log10_padj'] = corr_df_filtered['-log10_padj'].clip(upper=cap)
+        corr_df_filtered['-log10_padj'] = corr_df_filtered['-log10_padj'].clip(upper=cap)
 
     # Define colors
     colors = [colors_pub['red'] if abs(rho) > 0.3 and padj < 0.05 else colors_pub['gray']
@@ -688,10 +722,10 @@ def create_summary_stats_plot(deg_df: pd.DataFrame, significant_genes: pd.DataFr
     fc_labels = ['0-0.5', '0.5-1', '1-1.5', '1.5-2', '>2']
     fc_counts = []
     if not significant_genes.empty:
-    for i in range(len(fc_bins) - 1):
-        count = len(significant_genes[(abs(significant_genes['log2FC']) >= fc_bins[i]) &
-                                      (abs(significant_genes['log2FC']) < fc_bins[i + 1])])
-        fc_counts.append(count)
+        for i in range(len(fc_bins) - 1):
+            count = len(significant_genes[(abs(significant_genes['log2FC']) >= fc_bins[i]) &
+                                          (abs(significant_genes['log2FC']) < fc_bins[i + 1])])
+            fc_counts.append(count)
     else:
         fc_counts = [0] * len(fc_labels)
 
@@ -717,10 +751,10 @@ def create_summary_stats_plot(deg_df: pd.DataFrame, significant_genes: pd.DataFr
     p_labels = ['< 0.001', '0.001-0.01', '0.01-0.05']
     p_counts = []
     if not significant_genes.empty:
-    for i in range(len(p_bins) - 1):
+        for i in range(len(p_bins) - 1):
             count = len(significant_genes[(significant_genes['padj'] >= p_bins[i]) &
                                           (significant_genes['padj'] < p_bins[i + 1])])
-        p_counts.append(count)
+            p_counts.append(count)
     else:
         p_counts = [0] * len(p_labels)
         

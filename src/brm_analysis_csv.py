@@ -43,8 +43,9 @@ def plot_brm_distribution(brm_expr_values, brm_gene, output_dir):
     # 计算统计数据
     mean_val = np.mean(brm_expr_values)
     median_val = np.median(brm_expr_values)
-    q1 = np.percentile(brm_expr_values, 25)
-    q3 = np.percentile(brm_expr_values, 75)
+    # 原Q1/Q3改为P40/P60
+    p40 = np.percentile(brm_expr_values, 40)
+    p60 = np.percentile(brm_expr_values, 60)
     
     plt.figure(figsize=(12, 8))
     
@@ -61,8 +62,9 @@ def plot_brm_distribution(brm_expr_values, brm_gene, output_dir):
     # 标注统计线
     plt.axvline(mean_val, color='red', linestyle='--', linewidth=2, label=f'Mean: {mean_val:.2f}')
     plt.axvline(median_val, color='green', linestyle='-', linewidth=2, label=f'Median: {median_val:.2f}')
-    plt.axvline(q1, color='orange', linestyle=':', linewidth=2, label=f'1st Quartile (Q1): {q1:.2f}')
-    plt.axvline(q3, color='purple', linestyle=':', linewidth=2, label=f'3rd Quartile (Q3): {q3:.2f}')
+    # 使用40%与60%分位替代Q1/Q3
+    plt.axvline(p40, color='orange', linestyle=':', linewidth=2, label=f'40th Percentile (P40): {p40:.2f}')
+    plt.axvline(p60, color='purple', linestyle=':', linewidth=2, label=f'60th Percentile (P60): {p60:.2f}')
     
     # Sanitize the gene name to be safe for filenames and labels
     if '|' in brm_gene:
@@ -359,30 +361,18 @@ def print_summary(brm_gene, expr, significant_genes, significant_corr, deg_df, c
     print(f"显著相关基因数: {len(significant_corr)}")
     
     if len(significant_genes) > 0:
-        print(f"\nTop 15 显著上调基因 (padj < 0.05):")
-        top_up = significant_genes[significant_genes['log2FC'] > 0].head(15)
-        for _, row in top_up.iterrows():
-            print(f"  {row['gene']}: log2FC={row['log2FC']:.3f}, padj={row['padj']:.2e}")
-        
-        print(f"\nTop 15 显著下调基因 (padj < 0.05):")
-        top_down = significant_genes[significant_genes['log2FC'] < 0].head(15)
-        for _, row in top_down.iterrows():
+        print(f"\nTop 10 显著差异表达基因 (按padj排序):")
+        top_deg = significant_genes.sort_values('padj', ascending=True).head(10)
+        for _, row in top_deg.iterrows():
             print(f"  {row['gene']}: log2FC={row['log2FC']:.3f}, padj={row['padj']:.2e}")
     else:
         print(f"\n未找到显著差异表达基因 (padj < 0.05)")
     
     # 添加相关性分析结果 (仅显示显著性基因 padj < 0.05)
     if len(significant_corr) > 0:
-        print(f"\nTop 15 显著正相关基因 (padj < 0.05, rho > 0.3):")
-        # 按相关系数降序排列，取前10个正相关显著基因
-        top_pos_corr = significant_corr[significant_corr['rho'] > 0].sort_values('rho', ascending=False).head(15)
-        for _, row in top_pos_corr.iterrows():
-            print(f"  {row['gene']}: rho={row['rho']:.3f}, padj={row['padj']:.2e}")
-        
-        print(f"\nTop 15 显著负相关基因 (padj < 0.05, rho < -0.3):")
-        # 按相关系数升序排列，取前10个负相关显著基因
-        top_neg_corr = significant_corr[significant_corr['rho'] < 0].sort_values('rho', ascending=True).head(15)
-        for _, row in top_neg_corr.iterrows():
+        print(f"\nTop 10 显著相关基因 (按padj排序):")
+        top_corr = significant_corr.sort_values('padj', ascending=True).head(10)
+        for _, row in top_corr.iterrows():
             print(f"  {row['gene']}: rho={row['rho']:.3f}, padj={row['padj']:.2e}")
     else:
         print(f"\n未找到显著相关基因 (padj < 0.05, |rho| > 0.3)")

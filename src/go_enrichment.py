@@ -34,6 +34,7 @@ import logging
 import sys
 from datetime import datetime
 import traceback
+import re # Added for gene recognition statistics
 
 # 定义项目根目录路径
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -241,6 +242,28 @@ def run_go_enrichment(gene_list, output_dir, analysis_name, logger):
         logger.info(f"  - 完成时间: {end_time.strftime('%H:%M:%S')}")
         logger.info(f"  - 分析耗时: {duration:.2f} 秒")
         logger.info(f"✓ 富集分析成功完成")
+        
+        # 统计：有多少输入基因被数据库识别（出现在任一条目的 Genes 列中）
+        try:
+            recognized_genes = set()
+            if hasattr(enr, 'results') and enr.results is not None and 'Genes' in enr.results.columns:
+                for gstr in enr.results['Genes'].dropna().astype(str):
+                    # Enrichr 的 Genes 字段通常以 ';' 分隔，也可能为 ','
+                    parts = [p.strip().upper() for p in re.split(r'[;,]', gstr) if p and p.strip()]
+                    recognized_genes.update(parts)
+            input_genes_set = set([g.upper() for g in gene_list])
+            recognized_from_input = input_genes_set.intersection(recognized_genes)
+            not_recognized = sorted(list(input_genes_set - recognized_from_input))
+            logger.info("输入基因识别统计（基于Enrichr返回的Genes字段）:")
+            logger.info(f"  - 输入基因数: {len(input_genes_set)}")
+            logger.info(f"  - 被数据库成功识别: {len(recognized_from_input)}")
+            logger.info(f"  - 未被识别: {len(not_recognized)}")
+            if len(not_recognized) <= 20 and len(not_recognized) > 0:
+                logger.info(f"  - 未识别列表: {', '.join(not_recognized)}")
+            elif len(not_recognized) > 20:
+                logger.info(f"  - 未识别前10例: {', '.join(not_recognized[:10])}")
+        except Exception as e2:
+            logger.warning(f"无法统计数据库识别基因数: {e2}")
         
     except Exception as e:
         logger.error(f"✗ 富集分析过程中发生错误: {e}")
